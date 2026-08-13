@@ -92,7 +92,7 @@ export default function SignupPage() {
           <BookOpen size={20} strokeWidth={2.2} />
         </div>
         <span className="text-[22px] font-extrabold tracking-tight text-zinc-100 group-hover:text-white transition-colors duration-300">
-          studyOS
+          STUDY OS
         </span>
       </Link>
 
