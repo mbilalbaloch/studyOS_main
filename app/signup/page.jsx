@@ -60,10 +60,19 @@ export default function SignupPage() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+      },
+    });
+  };
+
   return (
     <div className="min-h-screen bg-black flex flex-col justify-start items-center pt-16 pb-12 px-4 font-sans text-zinc-100 relative overflow-x-hidden">
       
-      {/* Full-Screen Minimalist Dotted Circle Spinner Loading Overlay (No Box) */}
+      {/* Full-Screen Minimalist Dotted Circle Spinner Loading Overlay */}
       {loading && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300">
           <div className="relative w-12 h-12 mb-4 animate-spin">
@@ -92,7 +101,7 @@ export default function SignupPage() {
           <BookOpen size={20} strokeWidth={2.2} />
         </div>
         <span className="text-[22px] font-extrabold tracking-tight text-zinc-100 group-hover:text-white transition-colors duration-300">
-          STUDY OS
+          STUDY OS.
         </span>
       </Link>
 
@@ -110,7 +119,7 @@ export default function SignupPage() {
             </p>
             <Link
               href="/login"
-              className="inline-block w-full py-3.5 px-4 bg-zinc-100 hover:bg-white active:bg-zinc-300 text-zinc-950 font-semibold rounded-xl text-sm transition-all shadow-sm text-center cursor-pointer"
+              className="inline-block w-full py-3.5 px-4 bg-zinc-100 hover:bg-white text-zinc-950 font-semibold rounded-xl text-sm transition-all text-center"
             >
               Go to login
             </Link>
@@ -214,6 +223,29 @@ export default function SignupPage() {
                 <span>Create account</span>
               </button>
             </form>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-zinc-800"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-[#0c0d10] px-3 text-zinc-500 font-medium">Or continue with</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full py-3 px-4 bg-black border border-zinc-800 hover:border-zinc-700 text-zinc-200 hover:text-white font-medium rounded-xl text-sm transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"/>
+                <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                <path fill="#FBBC05" d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.7s.2-2 .4-2.7L1.6 6.4C.6 8.4 0 10.6 0 13s.6 4.6 1.6 6.6l3.7-2.9z"/>
+                <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"/>
+              </svg>
+              <span>Google</span>
+            </button>
 
             <div className="mt-8 text-center text-sm text-zinc-500">
               Already have an account?{' '}
