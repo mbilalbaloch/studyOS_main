@@ -16,7 +16,7 @@ export default function Navbar() {
             S
           </div>
           <span className="text-lg font-bold tracking-tight text-neutral-900">
-            Study OS
+            STUDY OS
           </span>
         </Link>
 
