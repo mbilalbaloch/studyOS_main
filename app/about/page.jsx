@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import Navbar from '@/app/components/Navbar';
 import Footer from '@/app/components/Footer';
-import { BookOpen, FileText, CheckCircle2, BarChart2, ArrowRight } from 'lucide-react';
+import ScrollReveal from '@/app/components/ScrollReveal';
 
 const coreCapabilities = [
   "Organize subjects and chapters",
@@ -18,7 +18,7 @@ const coreCapabilities = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-neutral-950 text-white flex flex-col font-sans selection:bg-neutral-800 selection:text-white">
+    <div className="min-h-screen bg-neutral-950 text-white flex flex-col font-sans selection:bg-neutral-800 selection:text-white overflow-x-hidden">
       
       {/* Navigation */}
       <Navbar />
@@ -52,104 +52,112 @@ export default function AboutPage() {
         </section>
 
         {/* What is Study OS? Section */}
-        <section className="relative w-full py-24 sm:py-32 border-b border-neutral-800">
-          <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
-            
-            <div className="max-w-2xl mb-12 sm:mb-16">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-6">
-                What is Study OS?
-              </h2>
-              <p className="text-base sm:text-lg text-neutral-400 font-normal leading-relaxed">
-                Study OS brings the important parts of studying into one organized workspace. Instead of jumping between notes, chapter lists, practice questions, and test results, everything is connected in one place.
-              </p>
-            </div>
+        <ScrollReveal>
+          <section className="relative w-full py-24 sm:py-32 border-b border-neutral-800">
+            <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
+              
+              <div className="max-w-2xl mb-12 sm:mb-16">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-6">
+                  What is Study OS?
+                </h2>
+                <p className="text-base sm:text-lg text-neutral-400 font-normal leading-relaxed">
+                  Study OS brings the important parts of studying into one organized workspace. Instead of jumping between notes, chapter lists, practice questions, and test results, everything is connected in one place.
+                </p>
+              </div>
 
-            {/* Checklist Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {coreCapabilities.map((item, index) => (
-                <div 
-                  key={index}
-                  className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-4 sm:p-5 flex items-center gap-3 text-sm text-neutral-300 font-medium"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
-                  <span>{item}</span>
-                </div>
-              ))}
-            </div>
+              {/* Checklist Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                {coreCapabilities.map((item, index) => (
+                  <div 
+                    key={index}
+                    className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-4 sm:p-5 flex items-center gap-3 text-sm text-neutral-300 font-medium"
+                  >
+                    <div className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
 
-          </div>
-        </section>
+            </div>
+          </section>
+        </ScrollReveal>
 
         {/* Why We Built It Section */}
-        <section className="relative w-full py-24 sm:py-32 border-b border-neutral-800">
-          <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
-            
-            <div className="max-w-2xl mb-12 sm:mb-16">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-6">
-                Built around the way students actually study.
-              </h2>
-              <p className="text-base sm:text-lg text-neutral-400 font-normal leading-relaxed">
-                Studying can become messy when your syllabus, notes, practice, and progress are scattered across different places. Study OS is designed to make that process simpler — giving students one clear place to learn, practice, and keep moving forward.
-              </p>
-            </div>
+        <ScrollReveal>
+          <section className="relative w-full py-24 sm:py-32 border-b border-neutral-800">
+            <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
+              
+              <div className="max-w-2xl mb-12 sm:mb-16">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-6">
+                  Built around the way students actually study.
+                </h2>
+                <p className="text-base sm:text-lg text-neutral-400 font-normal leading-relaxed">
+                  Studying can become messy when your syllabus, notes, practice, and progress are scattered across different places. Study OS is designed to make that process simpler — giving students one clear place to learn, practice, and keep moving forward.
+                </p>
+              </div>
 
-          </div>
-        </section>
+            </div>
+          </section>
+        </ScrollReveal>
 
         {/* Core Idea Flow Section */}
-        <section className="relative w-full py-24 sm:py-32 border-b border-neutral-800">
-          <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 text-center">
-            
-            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400 mb-8 sm:mb-12">
-              Core Workflow
-            </h3>
+        <ScrollReveal>
+          <section className="relative w-full py-24 sm:py-32 border-b border-neutral-800">
+            <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 text-center">
+              
+              <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-400 mb-8 sm:mb-12">
+                Core Workflow
+              </h3>
 
-            {/* Flow Representation */}
-            <div className="flex flex-col md:flex-row items-center justify-center gap-3 sm:gap-4 mb-8">
-              <div className="w-full md:w-auto px-6 py-4 rounded-lg border border-neutral-800 bg-neutral-900/50 text-sm font-semibold text-white">
-                Learn
+              {/* Flow Representation */}
+              <div className="flex flex-col md:flex-row items-center justify-center gap-3 sm:gap-4 mb-8">
+                <div className="w-full md:w-auto px-6 py-4 rounded-lg border border-neutral-800 bg-neutral-900/50 text-sm font-semibold text-white">
+                  Learn
+                </div>
+                <div className="text-neutral-600 hidden md:block">→</div>
+                <div className="w-full md:w-auto px-6 py-4 rounded-lg border border-neutral-800 bg-neutral-900/50 text-sm font-semibold text-white">
+                  Practice
+                </div>
+                <div className="text-neutral-600 hidden md:block">→</div>
+                <div className="w-full md:w-auto px-6 py-4 rounded-lg border border-neutral-800 bg-neutral-900/50 text-sm font-semibold text-white">
+                  Test
+                </div>
+                <div className="text-neutral-600 hidden md:block">→</div>
+                <div className="w-full md:w-auto px-6 py-4 rounded-lg border border-neutral-800 bg-neutral-900/50 text-sm font-semibold text-white">
+                  Improve
+                </div>
               </div>
-              <div className="text-neutral-600 hidden md:block">→</div>
-              <div className="w-full md:w-auto px-6 py-4 rounded-lg border border-neutral-800 bg-neutral-900/50 text-sm font-semibold text-white">
-                Practice
-              </div>
-              <div className="text-neutral-600 hidden md:block">→</div>
-              <div className="w-full md:w-auto px-6 py-4 rounded-lg border border-neutral-800 bg-neutral-900/50 text-sm font-semibold text-white">
-                Test
-              </div>
-              <div className="text-neutral-600 hidden md:block">→</div>
-              <div className="w-full md:w-auto px-6 py-4 rounded-lg border border-neutral-800 bg-neutral-900/50 text-sm font-semibold text-white">
-                Improve
-              </div>
+
+              <p className="text-sm text-neutral-400 font-normal">
+                One continuous study workflow.
+              </p>
+
             </div>
-
-            <p className="text-sm text-neutral-400 font-normal">
-              One continuous study workflow.
-            </p>
-
-          </div>
-        </section>
+          </section>
+        </ScrollReveal>
 
         {/* Final CTA Section */}
-        <section className="relative w-full py-24 sm:py-32">
-          <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 text-center flex flex-col items-center">
-            
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">
-              Make your study routine simpler.
-            </h2>
-            <p className="text-base sm:text-lg text-neutral-400 font-normal max-w-md mb-8">
-              Everything you need to stay organized and keep making progress, in one place.
-            </p>
+        <ScrollReveal>
+          <section className="relative w-full py-24 sm:py-32">
+            <div className="mx-auto max-w-4xl px-5 sm:px-6 lg:px-8 text-center flex flex-col items-center">
+              
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">
+                Make your study routine simpler.
+              </h2>
+              <p className="text-base sm:text-lg text-neutral-400 font-normal max-w-md mb-8">
+                Everything you need to stay organized and keep making progress, in one place.
+              </p>
 
-            <Link
-              href="/signup"
-              className="inline-flex items-center justify-center rounded-md bg-white px-7 py-3.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200 transition-colors shadow-sm active:scale-[0.98]"
-            >
-              Get Started
-            </Link>
+              <Link
+                href="/signup"
+                className="inline-flex items-center justify-center rounded-md bg-white px-7 py-3.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200 transition-colors shadow-sm active:scale-[0.98]"
+              >
+                Get Started
+              </Link>
 
-          </div>
-        </section>
+            </div>
+          </section>
+        </ScrollReveal>
 
       </main>
 

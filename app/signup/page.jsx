@@ -1,15 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BookOpen, CheckCircle2, Check, X } from 'lucide-react';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 export default function SignupPage() {
   const [fullName, setFullName] = useState('');
@@ -19,6 +14,13 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const router = useRouter();
+
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
 
   const isPasswordLengthValid = password.length >= 8;
   const arePasswordsMatching = password.length > 0 && password === confirmPassword;
@@ -61,19 +63,27 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen bg-black flex flex-col justify-start items-center pt-16 pb-12 px-4 font-sans text-zinc-100 relative overflow-x-hidden">
       
-      {/* Full-Screen Modern Cinematic Loading Overlay */}
+      {/* Full-Screen Minimalist Dotted Circle Spinner Loading Overlay (No Box) */}
       {loading && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300">
-          <div className="bg-[#0c0d10] border border-zinc-800 p-8 rounded-3xl shadow-2xl flex flex-col items-center max-w-sm w-full mx-4">
-            <div className="relative mb-4">
-              <div className="w-12 h-12 rounded-full border-2 border-zinc-800 border-t-zinc-100 animate-spin"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <BookOpen size={16} className="text-zinc-400" />
-              </div>
-            </div>
-            <h2 className="text-base font-semibold text-zinc-100 tracking-tight">Creating account</h2>
-            <p className="text-xs text-zinc-400 mt-1 text-center">Setting up your secure study workspace...</p>
+          <div className="relative w-12 h-12 mb-4 animate-spin">
+            {[...Array(8)].map((_, i) => {
+              const rotation = i * 45;
+              const opacity = (i + 1) / 8;
+              return (
+                <div
+                  key={i}
+                  className="absolute w-2 h-2 bg-zinc-100 rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                  style={{
+                    transform: `rotate(${rotation}deg) translate(0, -16px)`,
+                    opacity: opacity,
+                  }}
+                />
+              );
+            })}
           </div>
+          <h2 className="text-base font-semibold text-zinc-100 tracking-tight">Creating account</h2>
+          <p className="text-xs text-zinc-400 mt-1 text-center">Setting up your workspace...</p>
         </div>
       )}
 
@@ -82,7 +92,7 @@ export default function SignupPage() {
           <BookOpen size={20} strokeWidth={2.2} />
         </div>
         <span className="text-[22px] font-extrabold tracking-tight text-zinc-100 group-hover:text-white transition-colors duration-300">
-          STUDY OS
+          studyOS
         </span>
       </Link>
 
