@@ -9,7 +9,7 @@ export default function Footer() {
     <a href="/contact" className="hover:opacity-75 transition-opacity">Contact</a>
   </div>
   <p className="text-xs text-slate-400 text-[15px]">
-    &copy; 2026 Oona. All rights reserved.
+    &copy; 2026 Study OS. All rights reserved.
   </p>
 </footer>
   );
