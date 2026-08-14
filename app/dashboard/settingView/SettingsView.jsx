@@ -28,25 +28,32 @@ export default function SettingsView({ user, supabase }) {
       const fileName = `${user.id}-${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      // Upload to Supabase 'avatars' bucket
+      // 1. Upload to Supabase 'avatars' bucket
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // Get Public URL
+      // 2. Get Public URL
       const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
       const publicUrl = data.publicUrl;
 
-      // Update user metadata immediately with new avatar
-      const { error: updateError } = await supabase.auth.updateUser({
+      // 3. Save permanently in the 'profiles' table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({ 
+          id: user.id, 
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) throw profileError;
+
+      // 4. Update user auth metadata as backup
+      await supabase.auth.updateUser({
         data: { avatar_url: publicUrl }
       });
-
-      if (updateError) throw updateError;
 
       setAvatarUrl(publicUrl);
       setSettingsMessage({ type: 'success', text: 'Profile picture updated successfully!' });
@@ -63,25 +70,38 @@ export default function SettingsView({ user, supabase }) {
     setSettingsLoading(true);
     setSettingsMessage(null);
 
-    const updateData = { data: { full_name: fullName, avatar_url: avatarUrl } };
-    if (newPassword.trim().length > 0) {
-      if (newPassword.length < 8) {
-        setSettingsMessage({ type: 'error', text: 'Password must be at least 8 characters.' });
-        setSettingsLoading(false);
-        return;
+    try {
+      // 1. Update permanent 'profiles' table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({ 
+          id: user.id, 
+          full_name: fullName,
+          avatar_url: avatarUrl,
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) throw profileError;
+
+      // 2. Update Auth metadata & Password if provided
+      const updateData = { data: { full_name: fullName, avatar_url: avatarUrl } };
+      if (newPassword.trim().length > 0) {
+        if (newPassword.length < 8) {
+          throw new Error('Password must be at least 8 characters.');
+        }
+        updateData.password = newPassword;
       }
-      updateData.password = newPassword;
-    }
 
-    const { error } = await supabase.auth.updateUser(updateData);
+      const { error: authError } = await supabase.auth.updateUser(updateData);
+      if (authError) throw authError;
 
-    if (error) {
-      setSettingsMessage({ type: 'error', text: error.message });
-    } else {
       setSettingsMessage({ type: 'success', text: 'Profile and settings updated successfully!' });
       setNewPassword('');
+    } catch (error) {
+      setSettingsMessage({ type: 'error', text: error.message });
+    } finally {
+      setSettingsLoading(false);
     }
-    setSettingsLoading(false);
   };
 
   return (
@@ -106,7 +126,7 @@ export default function SettingsView({ user, supabase }) {
           </div>
         )}
 
-        {/* Instagram/Facebook Style Profile Picture Section */}
+        {/* Profile Picture Section */}
         <div className="flex items-center gap-6 mb-8 pb-6 border-b border-zinc-800/80">
           <div className="relative group">
             <div className="w-20 h-20 rounded-full overflow-hidden bg-zinc-900 border-2 border-zinc-700/80 flex items-center justify-center text-zinc-200 font-bold text-2xl shadow-inner">
