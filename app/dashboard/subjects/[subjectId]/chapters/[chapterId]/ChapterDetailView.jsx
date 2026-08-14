@@ -747,7 +747,6 @@
 // }
 
 
-
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -1257,18 +1256,75 @@ function TopicDetailView({ topic: initialTopic, onBack, onTopicUpdated }) {
 // =========================================================================
 // 4. MAIN CHAPTER DETAIL VIEW (HERO COMPONENT)
 // =========================================================================
-export default function ChapterDetailView({ user, subject, initialChapter, initialNoteTopics = [] }) {
-  const [chapter, setChapter] = useState(initialChapter);
-  const [topics, setTopics] = useState(initialNoteTopics);
+export default function ChapterDetailView({ user, subject: initialSubject, initialChapter, initialNoteTopics = [], params }) {
+  const [chapter, setChapter] = useState(initialChapter || null);
+  const [subject, setSubject] = useState(initialSubject || null);
+  const [topics, setTopics] = useState(initialNoteTopics || []);
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("updated_desc");
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [loadingData, setLoadingData] = useState(!initialChapter);
+
+  // Fallback: If initial props weren't provided, fetch data using params (support both id and chapterId)
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchMissingData() {
+      if (initialChapter) return;
+
+      const targetChapterId = params?.chapterId || params?.id;
+      if (!targetChapterId) {
+        setLoadingData(false);
+        return;
+      }
+
+      try {
+        setLoadingData(true);
+        // Fetch chapter
+        const { data: chapData, error: chapErr } = await supabase
+          .from("chapters")
+          .select("*")
+          .eq("id", targetChapterId)
+          .single();
+
+        if (chapErr) throw chapErr;
+        if (isMounted) setChapter(chapData);
+
+        // Fetch subject if missing and subject_id exists
+        if (chapData?.subject_id) {
+          const { data: subjData } = await supabase
+            .from("subjects")
+            .select("*")
+            .eq("id", chapData.subject_id)
+            .single();
+          if (isMounted && subjData) setSubject(subjData);
+        }
+
+        // Fetch topics and their images
+        const { data: topicsData, error: topicsErr } = await supabase
+          .from("note_topics")
+          .select("*, note_images(*)")
+          .eq("chapter_id", targetChapterId)
+          .order("updated_at", { ascending: false });
+
+        if (!topicsErr && isMounted) {
+          setTopics(topicsData || []);
+        }
+      } catch (err) {
+        console.error("Error fetching chapter details:", err.message);
+      } finally {
+        if (isMounted) setLoadingData(false);
+      }
+    }
+
+    fetchMissingData();
+    return () => { isMounted = false; };
+  }, [initialChapter, params]);
 
   // Toggle Chapter Completion Status
   const handleToggleComplete = async () => {
-    if (updatingStatus) return;
+    if (updatingStatus || !chapter) return;
     try {
       setUpdatingStatus(true);
       const newStatus = !chapter.is_completed;
@@ -1347,25 +1403,50 @@ export default function ChapterDetailView({ user, subject, initialChapter, initi
     return result;
   }, [topics, searchQuery, sortBy]);
 
+  if (loadingData) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-zinc-400 text-sm">
+          <Loader2 className="w-5 h-5 animate-spin" /> Loading chapter details...
+        </div>
+      </div>
+    );
+  }
+
+  if (!chapter) {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center gap-4">
+        <div className="text-zinc-400 text-sm">Chapter not found or failed to load.</div>
+        <Link href="/dashboard" className="text-xs bg-zinc-900 border border-zinc-800 px-4 py-2 rounded-lg text-zinc-200 hover:border-zinc-700 transition">
+          Return to Dashboard
+        </Link>
+      </div>
+    );
+  }
+
+  const subjectId = subject?.id || chapter?.subject_id;
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
       {/* Header Bar */}
       <header className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur sticky top-0 z-30 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
-            href={`/dashboard/subjects/${subject?.id}`}
+            href={subjectId ? `/dashboard/subjects/${subjectId}` : `/dashboard`}
             className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-100 transition flex items-center justify-center"
             title="Back to subject chapters"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <div>
-            <Link 
-              href={`/dashboard/subjects/${subject?.id}`}
-              className="text-xs font-medium text-zinc-400 uppercase tracking-wider hover:text-zinc-200 transition"
-            >
-              {subject?.name || "Subject"}
-            </Link>
+            {subjectId && (
+              <Link 
+                href={`/dashboard/subjects/${subjectId}`}
+                className="text-xs font-medium text-zinc-400 uppercase tracking-wider hover:text-zinc-200 transition"
+              >
+                {subject?.name || "Subject"}
+              </Link>
+            )}
             <h1 className="text-xl font-semibold text-zinc-100 mt-0.5">
               {chapter?.title || "Chapter"}
             </h1>
