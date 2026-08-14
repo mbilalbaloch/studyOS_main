@@ -43,20 +43,20 @@ export async function POST(request) {
     }
 
     const systemInstruction = `You are an expert AI tutor for StudyOS, an educational platform for students in Pakistan (Class 10 level / entry test preparation). 
-Your task is to generate practice questions based strictly on the student's instructions, practice type, and chapter context.
-You MUST return a valid JSON object matching this exact schema:
+Your task is to generate practice questions based strictly on the student's instructions and chapter context.
+You MUST return ONLY a valid JSON object matching this exact structure with no extra text or markdown formatting:
 {
   "questions": [
     {
       "question": "Clear question text",
-      "topic": "Concise concept/topic name (e.g. Function definition)",
+      "topic": "Concise concept name",
       "options": ["Option A", "Option B", "Option C", "Option D"],
       "correctAnswer": 0,
       "explanation": "Detailed explanation of why the answer is correct."
     }
   ]
 }
-Provide between 5 to 10 high-quality questions appropriate for the request. For correctAnswers, provide the 0-based index of the correct option.`;
+Provide between 5 to 10 high-quality questions. For correctAnswer, provide the 0-based index (0, 1, 2, or 3) of the correct option.`;
 
     const userPrompt = `Subject ID: ${subjectId}
 Chapter: ${chapterName || 'General Chapter'}
@@ -64,17 +64,23 @@ Practice Type: ${practiceType}
 Student Instructions: ${prompt}`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
       config: {
         systemInstruction: systemInstruction,
         responseMimeType: 'application/json',
-        temperature: 0.7,
+        temperature: 0.5,
       }
     });
 
-    const responseText = response.text();
-    const parsedData = JSON.parse(responseText);
+    const responseText = response.text;
+    if (!responseText) {
+      throw new Error('Received empty response from AI model.');
+    }
+
+    // Clean any accidental markdown code blocks if present
+    const cleanJsonText = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
+    const parsedData = JSON.parse(cleanJsonText);
 
     if (!parsedData.questions || !Array.isArray(parsedData.questions)) {
       throw new Error('Invalid response structure received from AI.');
